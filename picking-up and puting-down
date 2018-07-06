@@ -1,0 +1,107 @@
+#include <Servo.h>
+Servo servo1;
+Servo servo2;
+Servo servo3;
+void test()                          //用于安装
+{
+  Serial.println("safe now");
+  servo1.write(90);
+  servo2.write(45);
+  servo3.write(45);
+  delay(100);
+}
+void get_ready()
+{
+  for(int i=90;i>45;i--)                   //缓慢移动至初始位置
+  {
+    servo1.write(i);
+    delay(20);
+  }
+  for(int i=45;i>30;i--)
+  {
+    servo2.write(i);
+    servo3.write(i);
+    delay(20);
+  }
+  Serial.println("ready!");
+}
+void pick()                     //末端前伸，大臂上移
+{
+  for(int i=30;i<60;i++)
+  {
+    servo2.write(i);
+    servo3.write(i);
+    delay(20);
+  }
+  for(int i=60;i>20;i--)
+  {
+    servo2.write(i);
+    delay(20);
+  }
+  Serial.println("picked up");
+}
+void place()                  //大臂下移，末端回收
+{
+  for(int i=20;i<60;i++)
+  {
+    servo2.write(i);
+    delay(20);
+  }
+  for(int i=60;i>30;i--)
+  {
+    servo2.write(i);
+    servo3.write(i);
+    delay(20);
+  }
+  Serial.println("placed");
+}
+void left_rotate()                       //底盘旋转
+{
+  for(int i=135;i>45;i--)
+  {
+    servo1.write(i);
+    delay(20);
+  }
+  Serial.println("at left");
+}
+void right_rotate()
+{
+  for(int i=45;i<135;i++)
+  {
+    servo1.write(i);
+    delay(20);
+  }
+  Serial.println("at right");
+}
+
+
+
+
+void setup() {
+  Serial.begin(9600);
+  servo1.attach(10);
+  servo2.attach(11);
+  servo3.attach(12);
+  pinMode(4,INPUT_PULLUP);
+  while(digitalRead(4)==HIGH)                     //按键未被按下
+  {
+    test();
+  }
+  get_ready();
+}
+
+void loop() {
+  pick();
+  right_rotate();
+  place();
+  left_rotate();
+  if(digitalRead(4)==LOW)
+  {
+    while(digitalRead(4)==LOW)
+   {
+      test();
+   }
+    get_ready();
+  }
+  
+}
