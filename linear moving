@@ -1,0 +1,135 @@
+#include <Servo.h>
+Servo servo1;
+Servo servo2;
+Servo servo3;
+int a1=90;
+int a2=45;
+int a3=45;
+
+
+void test()                 //安装调试，按下按钮进入工作
+{
+  while(digitalRead(4)==HIGH)
+  {
+    a1=90;
+    a2=45;
+    a3=45;
+    moving();
+    delay(2000);
+    Serial.println("safe now");
+  }
+  while(a2>30)
+  {
+    a2--;
+    a3--;
+    moving();            //移动到直线轨迹初始位置
+  }
+}
+
+
+void moving()            //以其他函数确定的三个角度值驱动舵机旋转
+{
+  servo1.write(a1);
+  servo2.write(a2);
+  servo3.write(a3);
+  delay(20);
+}
+
+
+void line()            //对于基座的一个角度，确定另两舵机的角度以使末端落在一条直线上
+{
+  //Serial.println(a1);
+  double d;
+  double y;
+  d=200*sin(a2*0.017453);
+  y=d*sin(a1*0.017453);          //d为末端到原点的直线距离，y为末端运动轨迹距原点的距离。设单节臂长为100
+  /*Serial.print(d);
+  Serial.print("      ");
+  Serial.print(y);
+  Serial.print("      ");*/
+  while(y<100)
+  {
+    //Serial.print("moving out     ");
+    a2++;
+    a3++;
+    d=200*sin(a2*0.017453);
+    y=d*sin(a1*0.017453);
+  }
+  while(y>100)
+  {
+    //Serial.println("moving in      ");
+    a2--;
+    a3--;
+    d=200*sin(a2*0.017453);
+    y=d*sin(a1*0.017453);
+  }
+  /*Serial.print(d);
+  Serial.print("     ");
+  Serial.println(y); */
+}
+
+void line_z()
+{
+  Serial.println(a2);
+  double y;
+  y=100*sin(a2*0.017453)+100*sin(a3*0.017453);
+  while(y<100)
+  {
+    a3++;
+    y=100*sin(a2*0.017453)+100*sin(a3*0.017453);
+  }
+  while(y>100)
+  {
+    a3--;
+    y=100*sin(a2*0.017453)+100*sin(a3*0.017453);
+  }
+ // Serial.println(y); 
+}
+
+void setup() {
+  servo1.attach(10,625,2400);
+  servo2.attach(11,625,2400);
+  servo3.attach(12,625,2400);
+  pinMode(4,INPUT_PULLUP);
+  Serial.begin(9600);
+  test();
+
+}
+
+void loop() {
+  while(a1<135)                  //横线运动到一端，另一端，回到原点
+  {
+    Serial.println("moving right");
+    a1++;
+    line();
+    moving();
+  }
+  while(a1>45)
+  {
+    Serial.println("moving left");
+    a1--;
+    line();
+    moving();
+  }
+  while(a1<90)
+  {
+    Serial.println("moving back");
+    a1++;
+    line();
+    moving();
+  }
+  
+  /*while(a2<70)           //竖直运动到一端，回到原点
+  {
+    a2++;
+    line_z();
+    moving();
+  }
+  while(a2>30)
+  {
+    a2--;
+    line_z();
+    moving();
+  }
+*/
+}
