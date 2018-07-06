@@ -1,0 +1,89 @@
+#include <Servo.h>
+Servo servo1;
+Servo servo2;
+Servo servo3;
+int a1=90;
+int a2=45;
+int a3=45;
+int a_now1=90;
+int a_now2=45;
+int a_now3=45;
+void test()                          //用于安装
+{
+  Serial.println("safe now");
+  servo1.write(90);
+  servo2.write(45);
+  servo3.write(45);
+  delay(100);
+}
+void moving()
+{
+  while(a_now1<a1)
+  {
+    a_now1++;
+    servo1.write(a_now1);
+    delay(20);
+  }
+  while(a_now1>a1)
+  {
+    a_now1--;
+    servo1.write(a_now1);
+    delay(20);
+  }
+
+  while(a_now2<a2)
+  {
+    a_now2++;
+    servo2.write(a_now2);
+    delay(20);
+  }
+  while(a_now2>a2)
+  {
+    a_now2--;
+    servo2.write(a_now2);
+    delay(20);
+  }
+
+  while(a_now3<a3)
+  {
+    a_now3++;
+    servo3.write(a_now3);
+    delay(20);
+  }
+  while(a_now3>a3)
+  {
+    a_now3--;
+    servo3.write(a_now3);
+    delay(20);
+  }
+}
+void target()
+{
+  a1=random(0,120)+30;
+  Serial.print(a1);
+  Serial.print("     ");
+  a2=random(0,50)+10;
+  Serial.print(a2);
+  Serial.print("     ");
+  a3=random(0,50)+10;
+  Serial.println(a3);
+}
+void setup() {
+  Serial.begin(9600);
+  servo1.attach(10);
+  servo2.attach(11);
+  servo3.attach(12);
+  pinMode(4,INPUT_PULLUP);
+  randomSeed(analogRead(0));
+  while(digitalRead(4)==HIGH)
+  {
+    test();
+  }
+
+}
+
+void loop() {
+  target();
+  moving();
+
+}
