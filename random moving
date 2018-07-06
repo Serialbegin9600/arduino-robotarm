@@ -62,7 +62,7 @@ void target()
   a1=random(0,120)+30;
   Serial.print(a1);
   Serial.print("     ");
-  a2=random(0,50)+10;
+  a2=random(0,50)+20;
   Serial.print(a2);
   Serial.print("     ");
   a3=random(0,50)+10;
