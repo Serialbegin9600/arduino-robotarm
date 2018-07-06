@@ -7,17 +7,27 @@ int a2=45;
 int a3=45;
 
 
-void test()                 //安装调试，按下按钮进入工作
+void test()                 //安装调试，插入舵机，按第一下按钮安装机械臂，第二下进入运行。注意舵机在零位置插入！
 {
   while(digitalRead(4)==HIGH)
   {
     a1=90;
-    a2=45;
-    a3=45;
+    a2=0;
+    a3=0;
     moving();
-    delay(2000);
-    Serial.println("safe now");
+    delay(1000);
+    
   }
+  a1=90;
+  a2=45;
+  a3=45;
+  moving();
+  delay(2000);
+  while(digitalRead(4)==HIGH)
+  {
+    delay(1000);
+    Serial.println("safe now");
+   }
   while(a2>30)
   {
     a2--;
@@ -30,8 +40,8 @@ void test()                 //安装调试，按下按钮进入工作
 void moving()            //以其他函数确定的三个角度值驱动舵机旋转
 {
   servo1.write(a1);
-  servo2.write(a2);
-  servo3.write(a3);
+  servo2.write(a2+45);
+  servo3.write(a3+45);
   delay(20);
 }
 
