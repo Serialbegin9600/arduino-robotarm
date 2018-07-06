@@ -1,3 +1,4 @@
+﻿//This page of code controls the robotarm to pick something up from one side and put them the other side.
 #include <Servo.h>
 Servo servo1;
 Servo servo2;
