@@ -1,0 +1,81 @@
+#include <Servo.h>
+Servo servoa;
+Servo servob;
+Servo servoc;
+
+int s1[20];
+int s2[20];
+int s3[20];                       //三个舵机分别记住20个位置节点
+int f_learn=HIGH;
+int iflearn=HIGH;
+void learn()                      //学习动作
+{
+  Serial.println("start learning");
+  int a1;int a11;int a2;int a21;int a3;int a31;        //a1a2a3为电位器输入值，a11a21a31为转换之后的角度值
+  int n=0;                         //n为当前要学习的节点序号
+  while(n<20)
+  {
+    a1=analogRead(0);
+    a11=map(a1,0,500,0,180);
+    servoa.write(a11);
+    a2=analogRead(1);
+    a21=map(a2,0,500,0,180);
+    servob.write(a21);
+    a3=analogRead(2);
+    a31=map(a3,0,500,0,180);
+    servoc.write(a31);
+    if(f_learn==HIGH&&digitalRead(3)==LOW)       //学习键被按下
+    {
+      s1[n]=a11;
+      s2[n]=a21;
+      s3[n]=a31;
+      n++;
+      Serial.print(a11);
+      Serial.print("  ");
+      Serial.print(a21);
+      Serial.print("  ");
+      Serial.println(a31);
+    }
+    f_learn=digitalRead(3);
+    delay(20);
+  }
+}
+void setup() {
+  servoa.attach(10);
+  servob.attach(11);
+  servoc.attach(12);
+  pinMode(3,INPUT);           //3号口接记住动作按键
+  pinMode(4,INPUT);           //4号口决定是否进入学习模式
+  Serial.begin(9600);
+  learn();                     //先执行一遍学习程序
+
+}
+
+void loop() {
+  if(iflearn==LOW)
+  {
+    learn();
+  }
+  int ds1=0;
+  int ds2=0;
+  int ds3=0;
+  float astep1=0;
+  float astep2=0;
+  float astep3=0;
+  for(int n=0;n<20;n++)
+  {
+    ds1=s1[n+1]-s1[n];
+    astep1=ds1/100;
+    ds2=s2[n+1]-s2[n];
+    astep2=ds2/100;
+    ds3=s3[n+1]-s3[n];
+    astep3=ds3/100;
+    for(int t=0;t<100;t++)
+    {
+      servoa.write(s1[n]+t*astep1);
+      servob.write(s2[n]+t*astep2);
+      servoc.write(s3[n]+t*astep3);
+      delay(20);
+    }
+  }
+}
